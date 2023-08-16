@@ -3,7 +3,7 @@
 int main()
 {
     int Blobturn, selectedblob;
-    char Blobattack, Blobdirection;
+    char inputDirection;
     bool attkcheck = false;
     int gameover = 0;
     int playercounter = 0;
@@ -18,7 +18,7 @@ int main()
             int y = rand() % 10;
             for (int j = 0; j < i; j++)
             {
-                if (x == Blobs[j].getxcoord() && y == Blobs[j].getycoord())
+                if (x == Blobs[j].getXCoord() && y == Blobs[j].getYCoord())
                 {
                     match = 1;
                     cout << "Please rerun the program to get a new random seed." << endl;
@@ -34,19 +34,19 @@ int main()
     }
     while (!gameover)
     {
-        if ((Blobs[0].gethealth() <= 0 && Blobs[1].gethealth() <= 1 && Blobs[2].gethealth() <= 0 && Blobs[3].gethealth() <= 0)
-            || (Blobs[4].gethealth() <= 0 && Blobs[5].gethealth() && Blobs[6].gethealth() <= 0 && Blobs[7].gethealth()))
+        if ((Blobs[0].getHealth() <= 0 && Blobs[1].getHealth() <= 0 && Blobs[2].getHealth() <= 0 && Blobs[3].getHealth() <= 0)
+            || (Blobs[4].getHealth() <= 0 && Blobs[5].getHealth() <= 0 && Blobs[6].getHealth() <= 0 && Blobs[7].getHealth() <= 0))
         {
             gameover = 1;
         }
         cout << "The blobs are located at: " << endl;
         for (int i = 0; i < 8; i++)
         {
-            cout << "Blob " << i << ": (" << Blobs[i] << ")" << "\t" << Blobs[i].gethealth() << "HP" << "\t" << Blobs[i].getpower() << "PWR" << endl;
+            cout << "Blob " << i << ": (" << Blobs[i] << ")" << "\t" << Blobs[i].getHealth() << "HP" << "\t" << Blobs[i].getPower() << "PWR" << endl;
         }
         int turnvalid = 1;
         cout << "It is player " << playercounter << "'s turn!" << endl;
-        cout << "Which blob  would you like to play?" << endl;
+        cout << "Which blob would you like to play?" << endl;
         cin >> selectedblob;
         if ((playercounter == 0 && selectedblob < 4 && selectedblob >= 0)
             || (playercounter == 1 && selectedblob >= 4 && selectedblob < 8))
@@ -54,58 +54,96 @@ int main()
             cout << "Player selected blob " << selectedblob << endl;
             cout << "If you would like to move with this Blob please enter 1 if you would like to attack please enter 2" << endl;
             cin >> Blobturn;
+            Blob::Direction Blobdirection;
             if (Blobturn == 1)
             {
                 cout << "Please enter the initial of the direction you would like to move in" << endl;
-                cin >> Blobdirection;
-                if (Blobturn == 1)
+                cin >> inputDirection;
+                switch (inputDirection) {
+                    case 'n':
+                    case 'N':
+                        Blobdirection = Blob::Direction::North;
+                    break;
+                    case 's':
+                    case 'S':
+                        Blobdirection = Blob::Direction::South;
+                    break;
+                    case 'e':
+                    case 'E':
+                        Blobdirection = Blob::Direction::East;
+                        break;
+                    case 'w':
+                    case 'W':
+                        Blobdirection = Blob::Direction::West;
+                        break;
+                    default:
+                        cout << "Invalid direction! Try again." << endl;
+                }
+                Blobs[selectedblob].Move(Blobdirection);
+                if (playercounter == 0)
                 {
-                    Blobs[selectedblob] = Move(Blobs[selectedblob], Blobdirection);
-                    if (playercounter == 0)
+                    for (int i = 1; i < 8; i++)
                     {
-                        for (int i = 1; i < 8; i++)
+                        if (Blob::checkPosition(Blobs[selectedblob], Blobs[i]) && selectedblob != i && i < 4)
                         {
-                            if (CheckPosition(Blobs[selectedblob], Blobs[i]) == true && selectedblob != i && i < 4)
-                            {
-                                Blobs[selectedblob] = Blobs[selectedblob] + Blobs[i];
-                                Blobs[i].DeadFlag();
-                            }
-                            else if (CheckPosition(Blobs[selectedblob], Blobs[i]) == true && selectedblob != i)
-                            {
-                                Blobs[selectedblob] = MoveBack(Blobs[selectedblob], Blobdirection);
-                            }
+                            Blobs[selectedblob] = Blobs[selectedblob] + Blobs[i];
+                            Blobs[i].DeadFlag();
+                        }
+                        else if (Blob::checkPosition(Blobs[selectedblob], Blobs[i]) && selectedblob != i)
+                        {
+                            Blobs[selectedblob].MoveBack(Blobdirection);
                         }
                     }
-                    else if (playercounter == 1)
+                }
+                else if (playercounter == 1)
+                {
+                    for (int i = 1; i < 8; i++)
                     {
-                        for (int i = 1; i < 8; i++)
+                        if (Blob::checkPosition(Blobs[selectedblob], Blobs[i]) && selectedblob != i && i > 4)
                         {
-                            if (CheckPosition(Blobs[selectedblob], Blobs[i]) == true && selectedblob != i && i > 4)
-                            {
-                                Blobs[selectedblob] = Blobs[selectedblob] + Blobs[i];
-                                Blobs[i].DeadFlag();
-                            }
-                            else if (CheckPosition(Blobs[selectedblob], Blobs[i]) == true && selectedblob != i)
-                            {
-                                Blobs[selectedblob] = MoveBack(Blobs[selectedblob], Blobdirection);
-                            }
+                            Blobs[selectedblob] = Blobs[selectedblob] + Blobs[i];
+                            Blobs[i].DeadFlag();
+                        }
+                        else if (Blob::checkPosition(Blobs[selectedblob], Blobs[i]) && selectedblob != i)
+                        {
+                            Blobs[selectedblob].MoveBack(Blobdirection);
                         }
                     }
                 }
             }
             else if (Blobturn == 2)
             {
-                cout << "Please enter the direction you would like to attack in" << endl;
-                cin >> Blobattack;
+                cout << "Please enter the initial of the direction you would like to attack in" << endl;
+                cin >> inputDirection;
+                switch (inputDirection) {
+                    case 'n':
+                    case 'N':
+                        Blobdirection = Blob::Direction::North;
+                    break;
+                    case 's':
+                    case 'S':
+                        Blobdirection = Blob::Direction::South;
+                    break;
+                    case 'e':
+                    case 'E':
+                        Blobdirection = Blob::Direction::East;
+                        break;
+                    case 'w':
+                    case 'W':
+                        Blobdirection = Blob::Direction::West;
+                        break;
+                    default:
+                        cout << "Invalid direction! Try again." << endl;
+                }
                 if (playercounter == 0)
                 {
                     for (int i = 4; i < 8; i++)
                     {
-                        if (CheckPosition(CheckAttack(Blobs[selectedblob], Blobattack), Blobs[i]) == true)
+                        if (Blob::checkPosition(Blobs[selectedblob].CheckAttack(Blobs[selectedblob], Blobdirection), Blobs[i]))
                         {
-                            Blobs[i] = Attack(Blobs[selectedblob], Blobs[i]);
+                            Blobs[i] = Blobs[selectedblob].Attack(Blobs[selectedblob], Blobs[i]);
                             attkcheck = true;
-                            if (Blobs[i].gethealth() <= 0)
+                            if (Blobs[i].getHealth() <= 0)
                             {
                                 Blobs[i].DeadFlag();
                                 turnvalid = 0;
@@ -121,11 +159,11 @@ int main()
                 {
                     for (int i = 0; i < 4; i++)
                     {
-                        if (CheckPosition(CheckAttack(Blobs[selectedblob], Blobattack), Blobs[i]) == true)
+                        if (Blob::checkPosition(Blobs[selectedblob].CheckAttack(Blobs[selectedblob], Blobdirection), Blobs[i]))
                         {
-                            Blobs[i] = Attack(Blobs[selectedblob], Blobs[i]);
+                            Blobs[i] = Blobs[selectedblob].Attack(Blobs[selectedblob], Blobs[i]);
                             attkcheck = true;
-                            if (Blobs[i].gethealth() <= 0)
+                            if (Blobs[i].getHealth() <= 0)
                             {
                                 Blobs[i].DeadFlag();
                                 turnvalid = 0;
@@ -151,3 +189,4 @@ int main()
     }
     return 0;
 }
+

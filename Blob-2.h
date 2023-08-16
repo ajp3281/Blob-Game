@@ -4,27 +4,29 @@
 using namespace std;
 class Blob
 {
-    friend ostream& operator<<(ostream& os, const Blob& b);
-    friend Blob operator+(Blob a, Blob b);
-    friend Blob Move(Blob a, char c);
-    friend Blob MoveBack(Blob a, char c);
-    friend bool CheckPosition(Blob a, Blob b);
-    friend Blob CheckAttack(Blob a, char c);
-    friend Blob Attack(Blob a, Blob b);
+    friend std::ostream& operator<<(std::ostream& os, const Blob& b);
 public:
+    enum class Direction {North, South, East, West};
     Blob();
     Blob(int x, int y);
     void DeadFlag();
-    int gethealth() const;
-    void sethealth(int);
-    int getpower() const;
-    void setpower(int);
-    char getcolor() const;
-    void setcolor(char);
-    int getxcoord() const;
-    void setxcoord(int);
-    int getycoord() const;
-    void setycoord(int);
+    int getHealth() const { return health; }
+    void setHealth(int h) { health = h; }
+    int getPower() const { return power; }
+    void setPower(int p) { power = p; }
+    char getColor() const { return color; }
+    void setColor(char c) { color = c; }
+    int getXCoord() const { return xcoord; }
+    void setXCoord(int x) { xcoord = x; }
+    int getYCoord() const { return ycoord; }
+    void setYCoord(int y) { ycoord = y; }
+    void Move(Direction);
+    void MoveBack(Direction);
+    void deadFlag();
+    static bool checkPosition(const Blob& a, const Blob& b) { return a.getXCoord() == b.getXCoord() && a.getYCoord() == b.getYCoord(); }
+    Blob CheckAttack(const Blob&, Direction) const;
+    Blob Attack(const Blob& a, const Blob& b) const;
+    Blob operator+(const Blob& a);
 private:
     int health;
     int power;

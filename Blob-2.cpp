@@ -19,206 +19,118 @@ Blob::Blob(int x, int y)
     ycoord = y;
 }
 
-int Blob::gethealth() const
-{
-    return health;
-}
 
-void Blob::sethealth(int h)
-{
-    health = h;
-}
-
-int Blob::getpower() const
-{
-    return power;
-}
-
-void Blob::setpower(int p)
-{
-    power = p;
-}
-
-char Blob::getcolor() const
-{
-    return color;
-}
-
-void Blob::setcolor(char c)
-{
-    color = c;
-}
-
-int Blob::getxcoord() const
-{
-    return xcoord;
-}
-
-void Blob::setxcoord(int x)
-{
-    xcoord = x;
-}
-
-int Blob::getycoord() const
-{
-    return ycoord;
-}
-
-void Blob::setycoord(int y)
-{
-    ycoord = y;
-}
-
-ostream& operator<<(ostream& os, const Blob& b)
-{
-    os << b.xcoord << "," << b.ycoord;
+ostream& operator<<(std::ostream& os, const Blob& b) {
+    os << b.getXCoord() << "," << b.getYCoord();
     return os;
 }
 
-Blob operator+(Blob a, Blob b)
+Blob Blob::operator+(const Blob& a)
 {
-    Blob c;
-    c.health = a.health + b.health;
-    if (a.power > b.power)
-    {
-        c.power = a.power + 2;
-    }
-    else
-    {
-        c.power = b.power + 2;
-    }
-    c.xcoord = a.xcoord;
-    c.ycoord = a.ycoord;
-    c.color = a.color;
-    return c;
+   Blob c;
+   c.setHealth(a.getHealth() + getHealth());
+   if (a.getPower() >= getPower()){
+    c.setPower(a.getPower()+2);
+   }
+   else {
+    c.setPower(getPower()+2);
+   }
+   c.setXCoord(a.getXCoord());
+   c.setYCoord(a.getYCoord());
+   c.setColor(a.getColor());
+   return c;
 }
 
-bool CheckPosition(Blob a, Blob b)
-{
-    if (a.xcoord == b.xcoord && a.ycoord == b.ycoord)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
 
-Blob Move(Blob a, char c)
+void Blob::Move(Direction direction)
 {
-    if (c == 'N' || c == 'n')
-    {
-        if (a.ycoord == 9)
-        {
-            cout << "You are already at the border of the map. Please try again next turn" << endl;
-        }
-
-        else
-        {
-            ++a.ycoord;
-        }
+    switch (direction) {
+        case Direction::North:
+            if (getYCoord() == 9) {
+                cout << "You are already at the border of the map. Please try again next turn" << endl;
+            } else {
+                setYCoord(getYCoord() + 1);
+            }
+            break;
+        case Direction::South:
+            if (getYCoord() == 0) {
+                cout << "You are already at the border of the map. Please try again next turn" << endl;
+            } else {
+                setYCoord(getYCoord() - 1);
+            }
+            break;
+        case Direction::East:
+            if (getXCoord() == 9) {
+                cout << "You are already at the border of the map. Please try again next turn" << endl;
+            } else {
+                setXCoord(getXCoord() + 1);
+            }
+            break;
+        case Direction::West:
+            if (getXCoord() == 0) {
+                cout << "You are already at the border of the map. Please try again next turn" << endl;
+            } else {
+                setXCoord(getXCoord() - 1);
+            }
+            break;
     }
-    else if (c == 'S' || c == 's')
-    {
-        if (a.ycoord == 0)
-        {
-            cout << "You are already at the border of the map. Please try again next turn" << endl;
-        }
-        else
-        {
-            --a.ycoord;
-        }
-    }
-    else if (c == 'E' || c == 'e')
-    {
-        if (a.xcoord == 9)
-        {
-            cout << "You are already at the border of the map. Please try again next turn" << endl;
-        }
-        else
-        {
-            ++a.xcoord;
-        }
-    }
-    else if (c == 'W' || c == 'w')
-    {
-        if (a.xcoord == 0)
-        {
-            cout << "You are already at the border of the map. Please try again next turn" << endl;
-        }
-        else
-        {
-            --a.xcoord;
-        }
-    }
-    else
-    {
-        cout << "Please enter a valid input" << endl;
-    }
-    return a;
 
 }
 
 
-Blob MoveBack(Blob a, char c)
+void Blob::MoveBack(Direction direction)
 {
-    if (c == 'N' || c == 'n')
-    {
-        a.ycoord--;
-    }
-    else if (c == 'S' || c == 's')
-    {
-        a.ycoord++;
-    }
-    else if (c == 'E' || c == 'e')
-    {
-        a.xcoord--;
-    }
-    else if (c == 'W' || c == 'w')
-    {
-        a.xcoord++;
-    }
-    cout << "There is an opposing teams blob at this location, please move elsewhere or attack next turn." << endl;
-    return a;
+   switch (direction){
+        case Direction::North:
+            setYCoord(getYCoord()+1);
+            break;
+        case Direction::South:
+            setYCoord(getYCoord()-1);
+            break;
+        case Direction::East:
+            setXCoord(getXCoord()+1);
+            break;
+        case Direction::West:
+            setXCoord(getXCoord()-1);
+            break;
+   }
+   cout << "There is an opposing teams blob at this location, please move elsewhere or attack next turn." << endl;
 }
 
 void Blob::DeadFlag()
 {
-    this->setxcoord(rand() % 1000 + 10);
-    this->setycoord(rand() % 1000 + 10);
+    this->setXCoord(rand() % 1000 + 10);
+    this->setYCoord(rand() % 1000 + 10);
 }
 
-Blob CheckAttack(Blob a, char c)
+Blob Blob::CheckAttack(const Blob& a, Direction direction) const
 {
     Blob temp;
-    temp.ycoord = a.ycoord;
-    temp.xcoord = a.xcoord;
-    if (c == 'N' || c == 'n')
-    {
-        ++temp.ycoord;
-    }
-    else if (c == 'S' || c == 's')
-    {
-        --temp.ycoord;
-    }
-    else if (c == 'E' || c == 'e')
-    {
-        ++temp.xcoord;
-    }
-    else if (c == 'W' || c == 'w')
-    {
-        --temp.xcoord;
+    temp.setXCoord(a.getXCoord());
+    temp.setYCoord(a.getYCoord());
+    switch (direction){
+        case Direction::North:
+            temp.setYCoord(getYCoord()+1);
+            break;
+        case Direction::South:
+            temp.setYCoord(getYCoord()-1);
+            break;
+        case Direction::East:
+            temp.setXCoord(getXCoord()+1);
+            break;
+        case Direction::West:
+            temp.setXCoord(getXCoord()-1);
+            break;
     }
     return temp;
 }
 
-Blob Attack(Blob a, Blob b)
+Blob Blob::Attack(const Blob& a, const Blob& b) const
 {
     Blob c;
-    c.health = b.health - a.power;
-    c.xcoord = b.xcoord;
-    c.ycoord = b.ycoord;
-    c.power = b.power;
+    c.setHealth(b.getHealth()-a.getPower());
+    c.setXCoord(b.getXCoord());
+    c.setYCoord(b.getYCoord());
+    c.setPower(b.getPower());
     return c;
 }
